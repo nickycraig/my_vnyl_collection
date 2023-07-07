@@ -4,6 +4,8 @@ from django.views import View
 from .models import Album
 from django.http import HttpResponse
 from django.views.generic.base import TemplateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic import DetailView
 
 # Create your views here.
 
@@ -43,3 +45,24 @@ class AlbumList(TemplateView):
         else:
             context["albums"] = Album.objects.all()
         return context
+    
+class AlbumCreate(CreateView):
+    model = Album
+    fields = ['title', 'artist', 'year', 'img', 'genre']
+    template_name = "album_create.html"
+    success_url = "/albums/"
+
+class AlbumDetail(DetailView):
+    model = Album
+    template_name = "album_detail.html"
+
+class AlbumUpdate(UpdateView):
+    model = Album
+    fields = ['title', 'artist', 'year', 'img', 'genre']
+    template_name = "album_update.html"
+    success_url = "/albums/"
+
+class AlbumDelete(DeleteView):
+    model = Album
+    template_name = "album_delete_confirmation.html"
+    success_url = "/albums/"

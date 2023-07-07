@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="detail__img">
+    <img src="{{album.img}}" alt="{{album.title}}" />
+    <h1 class="title">{{album.title}} ({{album.year}})</h1>
+    <h2 class="title is-4">{{album.artist}}</h2>
+</br>
+</div>
+<div class="detail__container">
+    <div class="buttons">
+        <a href="{% url 'album_update' album.pk %}" class="button is-info">
+            <span class="icon">
+                <i class="fas fa-edit"></i>
+            </span>
+        </a>
+        <a href="{% url 'album_delete' album.pk %}" class="button is-danger">
+            <span class="icon">
+                <i class="fas fa-trash-alt"></i>
+            </span>
+        </a>
+    </div>
+    <div class="detail__about">
+        <h4 class="title is-4">Track Listing</h4>
+        <p></p>
+    </div>
+</div>
+
+{% endblock %}
