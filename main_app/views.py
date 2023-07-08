@@ -1,7 +1,8 @@
 from typing import Any, Dict
-from django.shortcuts import render
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.views import View
-from .models import Album
+from .models import Album, Track, Playlist
 from django.http import HttpResponse
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -11,6 +12,11 @@ from django.views.generic import DetailView
 
 class Home(TemplateView):
     template_name = "home.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["playlists"] = Playlist.objects.all()
+        return context
     
 class About(TemplateView):
     template_name = "about.html"
@@ -50,19 +56,43 @@ class AlbumCreate(CreateView):
     model = Album
     fields = ['title', 'artist', 'year', 'img', 'genre']
     template_name = "album_create.html"
-    success_url = "/albums/"
+    def get_success_url(self):
+        return reverse('album_detail', kwargs={'pk': self.object.pk})
 
 class AlbumDetail(DetailView):
     model = Album
     template_name = "album_detail.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["playlists"] = Playlist.objects.all()
+        return context
 
 class AlbumUpdate(UpdateView):
     model = Album
     fields = ['title', 'artist', 'year', 'img', 'genre']
     template_name = "album_update.html"
-    success_url = "/albums/"
+    def get_success_url(self):
+        return reverse('album_detail', kwargs={'pk': self.object.pk})
 
 class AlbumDelete(DeleteView):
     model = Album
     template_name = "album_delete_confirmation.html"
     success_url = "/albums/"
+
+class TrackCreate(View):
+    def post(self, request, pk):
+        title = request.POST.get("title")
+        length = request.POST.get("length")
+        album = Album.objects.get(pk=pk)
+        Track.objects.create(title=title, length=length, album=album)
+        return redirect('album_detail', pk=pk)
+    
+class PlaylistTrackAssoc(View):
+    def get(self, request, pk, track_pk):
+        assoc = request.GET.get("assoc")
+        if assoc == "remove":
+            Playlist.objects.get(pk=pk).tracks.remove(track_pk)
+        if assoc == "add":
+            Playlist.objects.get(pk=pk).tracks.add(track_pk)
+        return redirect('home')

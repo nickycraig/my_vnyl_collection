@@ -1,4 +1,5 @@
 from django.db import models
+import time
 
 # Create your models here.
 class Album(models.Model):
@@ -14,3 +15,21 @@ class Album(models.Model):
     
     class Meta:
         ordering = ['title']
+
+class Track(models.Model):
+    title = models.CharField(max_length=150)
+    length = models.IntegerField(default=0)
+    album = models.ForeignKey(Album, on_delete=models.CASCADE, related_name="tracks")
+
+    def __str__(self):
+        return self.title
+    
+    def get_length(self):
+        return time.strftime("%-M:%S", time.gmtime(self.length))
+    
+class Playlist(models.Model):
+    title = models.CharField(max_length=150)
+    tracks = models.ManyToManyField(Track)
+
+    def __str__(self):
+        return self.title

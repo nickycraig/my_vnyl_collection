@@ -3,7 +3,8 @@
 <div class="detail__img">
     <img src="{{album.img}}" alt="{{album.title}}" />
     <h1 class="title">{{album.title}} ({{album.year}})</h1>
-    <h2 class="title is-4">{{album.artist}}</h2>
+    <h2 class="title is-4">Artist: {{album.artist}}</h2>
+    <h3 class="title is-5">Genre: {{album.genre}}</h3>
 </br>
 </div>
 <div class="detail__container">
@@ -19,9 +20,68 @@
             </span>
         </a>
     </div>
-    <div class="detail__about">
-        <h4 class="title is-4">Track Listing</h4>
-        <p></p>
+    <div class="detail__tracks mb-5">
+        <h3 class="title is-3">Track Listing</h3>
+        <form class="mb-5" action="{% url 'track_create' album.pk %}" method="post">
+            {% csrf_token %}
+            <div class="field has-addons">
+                <div class="control">
+                    <input
+                        class="input"
+                        type="text"
+                        name="title"
+                        placeholder="Title"
+                        required
+                    />
+                </div>
+                <div class="control">
+                    <input
+                        class="input"
+                        type="number"
+                        name="length"
+                        placeholder="Length in Seconds"
+                        min="1"
+                        required
+                    />
+                </div>
+                <div class="control">
+                    <input class="button is-primary" type="submit" value="Add Track" />
+                </div>
+            </div>
+        </form>
+        {% for track in album.tracks.all %}
+        <div class="track">
+            <span>{{forloop.counter}}</span>
+            <span>{{track.title}}</span>
+            <span>{{track.get_length}}</span>
+            <span>
+                <div class="dropdown">
+                    <div class="dropdown-trigger">
+                        <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                            <span>Add to Playlist</span>
+                            <span class="icon is-small">
+                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                            {% for playlist in playlists %}
+                            <a href="{% url 'playlist_track_assoc' playlist.pk track.pk %}?assoc=add" class="dropdown-item">{{playlist.title}}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </span>
+        </div>
+        {% empty %}
+        <article class="message">
+            <div class="message-header">
+                <p>No Tracks Available</p>
+            </div>
+        </article>
+
+        {% endfor %}
     </div>
 </div>
 

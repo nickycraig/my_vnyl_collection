@@ -1,4 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
 <h1>VNYL HOME</h1>
+<div class="home__playlists">
+    {% for playlist in playlists %}
+
+        <div class="playlist mb-5">
+            <h3 class="title is-3 has-text-success">{{playlist.title}}</h3>
+            <hr />
+
+            {% for track in playlist.tracks.all %}
+
+                <div class="track">
+                    <span>{{forloop.counter}}</span>
+                    <span><b>{{track.title}}</b></span>
+                    <span>{{track.get_length}}</span>
+                    <span>
+                        <a href="{% url 'playlist_track_assoc' playlist.pk track.pk %}?assoc=remove" class="button is-danger is-outlined">
+                            <span class="icon is-small">
+                                <i class="fas fa-times"></i>
+                            </span>
+                        </a>
+                    </span>
+                </div>
+
+            {% endfor %}
+        </div>
+    {% empty %} 
+        <div class="playlist mb-5">"No Featured Tracks!"</div>
+    {% endfor %}
+</div>
 {% endblock %}
